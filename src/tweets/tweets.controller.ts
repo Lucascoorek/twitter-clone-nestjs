@@ -6,6 +6,7 @@ import {
     Body,
     Put,
     Delete,
+    NotFoundException
 } from '@nestjs/common';
 import { TweetsService } from './tweets.service';
 import { Tweet as TweetModel } from '@prisma/client';
@@ -18,7 +19,11 @@ export class TweetsController {
 
     @Get(':id')
     async getTweetById(@Param('id') id: string): Promise<TweetModel> {
-        return this.tweetsService.tweet({ id: Number(id) });
+        const tweet = await this.tweetsService.tweet({ id: Number(id) });
+        if (!tweet) {
+            throw new NotFoundException();
+        }
+        return tweet;
     }
 
     @Get()
