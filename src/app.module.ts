@@ -1,10 +1,12 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { PrismaService } from './prisma.service';
 import { TweetsModule } from './tweets/tweets.module';
 import { Global } from '@nestjs/common/decorators';
 import { UsersModule } from './users/users.module';
+import { AuthMiddleware } from './middleware/auth.middleware';
+import { TweetsController } from './tweets/tweets.controller';
 
 @Global()
 @Module({
@@ -13,4 +15,10 @@ import { UsersModule } from './users/users.module';
   providers: [PrismaService],
   exports: [PrismaService]
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes(TweetsController);
+  }
+}
