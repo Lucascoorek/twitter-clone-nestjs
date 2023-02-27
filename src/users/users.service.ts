@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User, Prisma } from '@prisma/client';
 
@@ -32,9 +32,15 @@ export class UsersService {
     }
 
     async createUser(data: Prisma.UserCreateInput): Promise<User> {
-        return this.prisma.user.create({
-            data,
-        });
+        try {
+            return await this.prisma.user.create({
+                data,
+            });
+        } catch (e) {
+            throw new HttpException("User email already taken", 409)
+        }
+
+
     }
 
     async updateUser(params: {

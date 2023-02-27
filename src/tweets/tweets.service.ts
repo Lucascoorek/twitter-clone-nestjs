@@ -14,6 +14,14 @@ export class TweetsService {
         });
     }
 
+    async findFirstTweet(
+        tweetWhereInput: Prisma.TweetWhereInput,
+    ): Promise<Tweet | null> {
+        return this.prisma.tweet.findFirstOrThrow({
+            where: tweetWhereInput,
+        });
+    }
+
     async tweets(params: {
         skip?: number;
         take?: number;

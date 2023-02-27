@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { UsersService } from 'src/users/users.service';
 
@@ -15,7 +15,9 @@ export class AuthMiddleware implements NestMiddleware {
             if (user) {
                 req.user = user;
             }
+            next();
+        } else {
+            throw new UnauthorizedException()
         }
-        next();
     }
 }
