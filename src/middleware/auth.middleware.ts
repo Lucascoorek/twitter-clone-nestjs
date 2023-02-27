@@ -7,13 +7,15 @@ export class AuthMiddleware implements NestMiddleware {
     constructor(
         private readonly usersService: UsersService,
     ) { }
-    use(req: Request, res: Response, next: NextFunction) {
+    async use(req: Request, res: Response, next: NextFunction) {
         const { API_KEY } = req.query;
 
         if (typeof API_KEY === 'string') {
-            console.log(API_KEY)
+            const user = await this.usersService.user({ email: API_KEY });
+            if (user) {
+                req.user = user;
+            }
         }
-
         next();
     }
 }
