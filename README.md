@@ -1,6 +1,6 @@
 ## Description
 
-Tweeter Clone API developed using [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Tweeter Clone API developed using [Nestjs](https://github.com/nestjs/nest) framework using TypeScript starter repository and [Prisma](https://github.com/prisma/prisma) ORM.
 
 ## Installation
 
