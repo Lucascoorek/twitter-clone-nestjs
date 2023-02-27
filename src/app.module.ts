@@ -19,6 +19,11 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .forRoutes(TweetsController, { path: 'users/:id', method: RequestMethod.GET });
+      .forRoutes(
+        TweetsController,
+        { path: 'users/:id', method: RequestMethod.GET },
+        { path: 'users/addfriend/:id', method: RequestMethod.PATCH },
+        { path: 'users/removefriend/:id', method: RequestMethod.PATCH },
+      );
   }
 }

@@ -11,6 +11,7 @@ export class UsersService {
     ): Promise<User | null> {
         return this.prisma.user.findUnique({
             where: userWhereUniqueInput,
+            include: { friends: true }
         });
     }
 
@@ -51,6 +52,7 @@ export class UsersService {
         return this.prisma.user.update({
             data,
             where,
+            include: { friends: true }
         });
     }
 

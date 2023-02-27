@@ -6,7 +6,9 @@ import {
     Req,
     UnauthorizedException,
     Post,
-    Body
+    Body,
+    NotAcceptableException,
+    Patch
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User as UserModel } from '@prisma/client';
@@ -21,7 +23,7 @@ export class UsersController {
     @Get(':id')
     async getUserById(@Req() req: Request, @Param('id') id: string): Promise<UserModel> {
 
-        if (req.user.id !== Number(id)) {
+        if ((req.user && req.user.id) !== Number(id)) {
             throw new UnauthorizedException();
         }
 
@@ -41,5 +43,53 @@ export class UsersController {
             throw new NotFoundException()
         }
         return this.usersService.createUser(userData);
+    }
+
+    @Patch("addfriend/:id")
+    async addFriend(@Req() req: Request, @Param('id') id: string,): Promise<UserModel> {
+        if (req.user.id === Number(id)) {
+            throw new NotAcceptableException()
+        }
+
+        const friend = await this.usersService.user({ id: Number(id) });
+        if (!friend) {
+            throw new NotAcceptableException()
+        }
+
+        const user = await this.usersService.updateUser({
+            where: { id: req.user.id },
+            data: { friends: { connect: [{ id: friend.id }] } }
+        })
+
+        await this.usersService.updateUser({
+            where: { id: friend.id },
+            data: { friends: { connect: [{ id: req.user.id }] } }
+        })
+
+        return user;
+    }
+
+    @Patch("removefriend/:id")
+    async removeFriend(@Req() req: Request, @Param('id') id: string,): Promise<UserModel> {
+        if (req.user.id === Number(id)) {
+            throw new NotAcceptableException()
+        }
+
+        const friend = await this.usersService.user({ id: Number(id) });
+        if (!friend) {
+            throw new NotAcceptableException()
+        }
+
+        const user = await this.usersService.updateUser({
+            where: { id: req.user.id },
+            data: { friends: { disconnect: [{ id: friend.id }] } }
+        })
+
+        await this.usersService.updateUser({
+            where: { id: friend.id },
+            data: { friends: { disconnect: [{ id: req.user.id }] } }
+        })
+
+        return user;
     }
 }
